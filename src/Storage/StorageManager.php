@@ -1,12 +1,15 @@
 <?php
 namespace Burzum\FileStorage\Storage;
 
+use Burzum\StorageFactory\StorageFactory;
+
 /**
  * StorageManager - manages and instantiates Gaufrette storage engine instances
  *
  * @author Florian Krämer
  * @copyright 2012 - 2016 Florian Krämer
  * @license MIT
+ * @deprecated Use Burzum\StorageFactory\StorageFactory instead. StorageManager is going to be removed in 2.0
  */
 class StorageManager {
 
@@ -24,6 +27,15 @@ class StorageManager {
 	];
 
 	/**
+	 * Gets the whole config array.
+	 *
+	 * @return array
+	 */
+	public function getAllConfig() {
+		return $this->_adapterConfig;
+	}
+
+	/**
 	 * Return a singleton instance of the StorageManager.
 	 *
 	 * @return \Burzum\FileStorage\Storage\StorageManager
@@ -32,6 +44,9 @@ class StorageManager {
 		static $instance = array();
 		if (!$instance) {
 			$instance[0] = new StorageManager();
+			foreach ($instance[0]->getAllConfig() as $name => $config) {
+				StorageFactory::config($name, $config);
+			}
 		}
 		return $instance[0];
 	}
@@ -44,17 +59,7 @@ class StorageManager {
 	 * @return mixed
 	 */
 	public static function config($adapter, $options = array()) {
-		$_this = StorageManager::getInstance();
-
-		if (!empty($adapter) && !empty($options)) {
-			return $_this->_adapterConfig[$adapter] = $options;
-		}
-
-		if (isset($_this->_adapterConfig[$adapter])) {
-			return $_this->_adapterConfig[$adapter];
-		}
-
-		return false;
+		return StorageFactory::config($adapter, $options);;
 	}
 
 	/**
@@ -64,14 +69,7 @@ class StorageManager {
 	 * @return bool True on success.
 	 */
 	public static function flush($name = null) {
-		$_this = StorageManager::getInstance();
-
-		if (isset($_this->_adapterConfig[$name])) {
-			unset($_this->_adapterConfig[$name]);
-			return true;
-		}
-
-		return false;
+		return StorageFactory::flush($name);
 	}
 
 	/**
@@ -83,36 +81,6 @@ class StorageManager {
 	 * @return \Gaufrette\Filesystem
 	 */
 	public static function adapter($adapterName, $renewObject = false) {
-		$_this = StorageManager::getInstance();
-
-		$isConfigured = true;
-		if (is_string($adapterName)) {
-			if (!empty($_this->_adapterConfig[$adapterName])) {
-				$adapter = $_this->_adapterConfig[$adapterName];
-			} else {
-				throw new \RuntimeException(sprintf('Invalid Storage Adapter %s!', $adapterName));
-			}
-
-			if (!empty($_this->_adapterConfig[$adapterName]['object']) && $renewObject === false) {
-				return $_this->_adapterConfig[$adapterName]['object'];
-			}
-		}
-
-		if (is_array($adapterName)) {
-			$adapter = $adapterName;
-			$isConfigured = false;
-		}
-
-		$class = $adapter['adapterClass'];
-		$Reflection = new \ReflectionClass($class);
-		if (!is_array($adapter['adapterOptions'])) {
-			throw new \InvalidArgumentException(sprintf('%s: The adapter options must be an array!', $adapterName));
-		}
-		$adapterObject = $Reflection->newInstanceArgs($adapter['adapterOptions']);
-		$engineObject = new $adapter['class']($adapterObject);
-		if ($isConfigured) {
-			$_this->_adapterConfig[$adapterName]['object'] = &$engineObject;
-		}
-		return $engineObject;
+		return StorageFactory::get($adapterName, $renewObject);
 	}
 }
