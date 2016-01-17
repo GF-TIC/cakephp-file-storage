@@ -9,7 +9,7 @@ use Cake\Filesystem\File;
  * Utility methods for which I could not find a better place
  *
  * @author Florian Krämer
- * @copyright 2012 - 2015 Florian Krämer
+ * @copyright 2012 - 2016 Florian Krämer
  * @license MIT
  */
 class StorageUtils {
@@ -68,11 +68,11 @@ class StorageUtils {
 	}
 
 	/**
-	 * Converts windows to linux pathes and vice versa
+	 * Converts windows to linux paths and vice versa
 	 *
 	 * @param string
 	 * @return string
- */
+	 */
 	public static function normalizePath($string) {
 		if (DS == '\\') {
 			return str_replace('/', '\\', $string);
@@ -84,25 +84,24 @@ class StorageUtils {
 	/**
 	 * Method to normalize the annoying inconsistency of the $_FILE array structure
 	 *
-	 * @link http://www.php.net/manual/en/features.file-upload.multiple.php#109437
-	 * @param array $array
+	 * @link http://de2.php.net/manual/en/features.file-upload.multiple.php#53240
+	 * @param array $files
 	 * @return array Empty array if $_FILE is empty, if not normalize array of Filedata.{n}
 	 */
-	public static function normalizeGlobalFilesArray($array = null) {
-		if (empty($array)) {
-			$array = $_FILES;
+	public static function normalizeGlobalFilesArray($files = null) {
+		if (empty($files)) {
+			$files = $_FILES;
 		}
-		$newfiles = array();
-		if (!empty($array)) {
-			foreach ($array as $fieldname => $fieldvalue) {
-				foreach ($fieldvalue as $paramname => $paramvalue) {
-					foreach ((array)$paramvalue as $index => $value) {
-						$newfiles[$fieldname][$index][$paramname] = $value;
-					}
-				}
+		$array = array();
+		$fileCount = count($files['name']);
+		$fileKeys = array_keys($files);
+
+		for ($i = 0; $i < $fileCount; $i++) {
+			foreach ($fileKeys as $key) {
+				$array[$i][$key] = $files[$key][$i];
 			}
 		}
-		return $newfiles;
+		return $array;
 	}
 
 	/**
@@ -162,11 +161,11 @@ class StorageUtils {
 	/**
 	 * Returns an array that matches the structure of a regular upload for a local file
 	 *
-	 * @param $file
-	 * @param string File with path
+	 * @param $file The file you want to get an upload array for.
+	 * @param string Name of the file to use in the upload array.
 	 * @return array Array that matches the structure of a regular upload
 	 */
-	public static function uploadArray($file, $filename = null) {
+	public static function fileToUploadArray($file, $filename = null) {
 		$File = new File($file);
 		if (empty($fileName)) {
 			$filename = basename($file);
@@ -178,6 +177,17 @@ class StorageUtils {
 			'type' => $File->mime(),
 			'size' => $File->size()
 		];
+	}
+
+	/**
+	 * Convenience alias for fileToUploadArray
+	 *
+	 * @param $file
+	 * @param string File with path
+	 * @return array Array that matches the structure of a regular upload
+	 */
+	public static function uploadArray($file, $filename = null) {
+		return self::fileToUploadArray($file, $filename);
 	}
 
 	/**

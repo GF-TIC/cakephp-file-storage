@@ -1,7 +1,7 @@
 <?php
 namespace Burzum\FileStorage\Test\TestCase\Model\Table;
 
-use \Cake\Core\Plugin;
+use Cake\Core\Plugin;
 use Cake\Event\Event;
 use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
@@ -11,7 +11,7 @@ use Burzum\FileStorage\TestSuite\FileStorageTestCase;
  * File Storage Test
  *
  * @author Florian Krämer
- * @copyright 2012 - 2015 Florian Krämer
+ * @copyright 2012 - 2016 Florian Krämer
  * @license MIT
  */
 class FileStorageTableTest extends FileStorageTestCase {

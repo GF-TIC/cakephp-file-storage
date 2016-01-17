@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Florian Krämer
- * @copyright 2012 - 2015 Florian Krämer
+ * @copyright 2012 - 2016 Florian Krämer
  * @license MIT
  */
 namespace Burzum\FileStorage\Storage\Listener;
@@ -76,25 +76,11 @@ class LocalListener extends AbstractListener {
 	 *
 	 * @param \Cake\Event\Event $event
 	 * @param \Cake\Datasource\EntityInterface $entity
-	 * @throws \Burzum\Filestorage\Storage\StorageException
 	 * @return void
 	 */
 	public function afterDelete(Event $event, EntityInterface $entity) {
 		if ($this->_checkEvent($event)) {
-			$path = $this->pathBuilder()->fullPath($entity);
-			try {
-				if ($this->storageAdapter($entity->adapter)->delete($path)) {
-					if ($this->_config['imageProcessing'] === true) {
-						$this->autoProcessImageVersions($entity, 'remove');
-					}
-					$event->result = true;
-					return;
-				}
-			} catch (\Exception $e) {
-				$this->log($e->getMessage(), LOG_ERR, ['scope' => ['storage']]);
-				throw new StorageException($e->getMessage());
-			}
-			$event->result = false;
+			$event->result = $this->_deleteFile($event);;
 			$event->stopPropagation();
 		}
 	}
@@ -161,29 +147,6 @@ class LocalListener extends AbstractListener {
 	}
 
 	/**
-	 * Stores the file in the configured storage backend.
-	 *
-	 * @param \Cake\Event\Event $event
-	 * @throws \Burzum\Filestorage\Storage\StorageException
-	 * @return boolean
-	 */
-	protected function _storeFile(Event $event) {
-		try {
-			$fileField = $this->config('fileField');
-			$entity = $event->data['record'];
-			$Storage = $this->storageAdapter($entity['adapter']);
-			$Storage->write($entity['path'], file_get_contents($entity[$fileField]['tmp_name']), true);
-			$event->result = $event->data['table']->save($entity, array(
-				'checkRules' => false
-			));
-			return true;
-		} catch (\Exception $e) {
-			$this->log($e->getMessage(), LogLevel::ERROR, ['scope' => ['storage']]);
-			throw new StorageException($e->getMessage());
-		}
-	}
-
-	/**
 	 * Removes a specific image version.
 	 *
 	 * @param \Cake\Event\Event $event
@@ -194,7 +157,7 @@ class LocalListener extends AbstractListener {
 	}
 
 	/**
-	 * Creates the verions for an image.
+	 * Creates the versions for an image.
 	 *
 	 * @param \Cake\Event\Event $event
 	 * @return void
@@ -226,6 +189,7 @@ class LocalListener extends AbstractListener {
 
 	/**
 	 * This method retrieves version names from event data.
+	 *
 	 * For backward compatibility version names are resolved from operations data keys because in old
 	 * ImageProcessingListener operations were required in event data. ImageProcessingTrait need only
 	 * version names so operations can be read from the config.

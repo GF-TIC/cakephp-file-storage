@@ -1,13 +1,12 @@
 <?php
 /**
  * @author Florian Krämer
- * @copyright 2012 - 2015 Florian Krämer
+ * @copyright 2012 - 2016 Florian Krämer
  * @license MIT
  */
 namespace Burzum\FileStorage\Shell;
 
 use Cake\Console\Shell;
-use Cake\Event\EventManagerTrait;
 
 class StorageShell extends Shell {
 

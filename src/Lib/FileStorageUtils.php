@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Florian Krämer
- * @copyright 2012 - 2015 Florian Krämer
+ * @copyright 2012 - 2016 Florian Krämer
  * @license MIT
  */
 namespace Burzum\FileStorage\Lib;
@@ -12,7 +12,7 @@ use Cake\Filesystem\File;
 /**
  * Utility methods for which I could not find a better place
  *
- * @deprecated Use \Burzum\FileStorage\Storage\StorageUtil instead.
+ * @deprecated Use \Burzum\FileStorage\Storage\StorageUtils instead.
  */
 class FileStorageUtils {
 

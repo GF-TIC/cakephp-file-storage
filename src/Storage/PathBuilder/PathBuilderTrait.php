@@ -2,7 +2,7 @@
 /**
  * @author Florian Krämer
  * @author Robert Pustułka
- * @copyright 2012 - 2015 Florian Krämer
+ * @copyright 2012 - 2016 Florian Krämer
  * @license MIT
  */
 namespace Burzum\FileStorage\Storage\PathBuilder;
@@ -57,5 +57,32 @@ trait PathBuilderTrait {
 			$this->_pathBuilder = $this->createPathBuilder($name, $options);
 		}
 		return $this->_pathBuilder;
+	}
+
+	/**
+	 * Gets the path builder.
+	 *
+	 * @return \Burzum\FileStorage\Storage\PathBuilder\PathBuilderInterface
+	 */
+	public function getPathBuilder($name) {
+		$this->pathBuilder($name);
+	}
+
+	/**
+	 * Sets a path builder.
+	 *
+	 * @param string|\Burzum\FileStorage\Storage\PathBuilder\PathBuilderInterface $pathBuilder
+	 * @param array Path builder options.
+	 * @return void
+	 */
+	public function setPathBuilder($pathBuilder, array $options = []) {
+		if (is_string($pathBuilder)) {
+			$this->_pathBuilder = $this->createPathBuilder($pathBuilder, $options);
+			return;
+		}
+		if (!$pathBuilder instanceof PathBuilderInterface) {
+			throw new \InvalidArgumentException('The first arg is not a valid path builder object!');
+		}
+		$this->_pathBuilder = $pathBuilder;
 	}
 }

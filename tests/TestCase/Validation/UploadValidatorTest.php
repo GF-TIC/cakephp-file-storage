@@ -3,15 +3,12 @@ namespace Burzum\FileStorage\Test\TestCase\Model\Table;
 
 use Burzum\FileStorage\TestSuite\FileStorageTestCase;
 use Burzum\FileStorage\Validation\UploadValidator;
-use Cake\Core\Plugin;
-use Cake\ORM\TableRegistry;
-use Cake\Event\Event;
 
 /**
  * Upload Validator Test
  *
  * @author Florian Krämer
- * @copyright 2012 - 2015 Florian Krämer
+ * @copyright 2012 - 2016 Florian Krämer
  * @license MIT
  */
 class UploadValidatorTest extends FileStorageTestCase {

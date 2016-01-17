@@ -5,7 +5,6 @@ use Cake\ORM\TableRegistry;
 use Burzum\FileStorage\TestSuite\FileStorageTestCase;
 use Burzum\FileStorage\Event\ImageProcessingListener;
 use Burzum\FileStorage\Model\Table\FileStorageTable;
-use Burzum\FileStorage\Model\Table\ImageStorageTable;
 
 class TestImageProcessingListener extends ImageProcessingListener {
 	public function buildPath($image, $extension = true, $hash = null) {
@@ -17,7 +16,7 @@ class TestImageProcessingListener extends ImageProcessingListener {
  * LocalImageProcessingListener Test
  *
  * @author Florian Krämer
- * @copyright 2012 - 2015 Florian Krämer
+ * @copyright 2012 - 2016 Florian Krämer
  * @license MIT
  *
  * @property ImageProcessingListener $Listener
